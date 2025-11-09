@@ -1,0 +1,57 @@
+<!DOCTYPE html><html><body>
+<h2>Producer Dashboard</h2>
+<p>Logged in as {{ user }}</p>
+
+<!-- Topic creation form -->
+<h3>Create New Topic</h3>
+<form method="post" action="/create_topic">
+  <input name="topic" placeholder="Enter new topic name" required>
+  <button>Create Topic</button>
+</form>
+
+<hr>
+
+<!-- Start CSV stream -->
+<h3>Data Stream</h3>
+<form method="post" action="/start_stream">
+  <button>Start CSV Stream</button>
+</form>
+
+<hr>
+<h3>Active Topics</h3>
+<table border="1" cellpadding="6">
+  <tr><th>Topic</th><th>Action</th></tr>
+  {% for t in topics %}
+  <tr>
+    <td>{{ t['name'] }}</td>
+    <td>
+      <form method="post" action="/delete_topic" style="display:inline;">
+        <input type="hidden" name="topic" value="{{ t['name'] }}">
+        <button>Request Deletion</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<hr>
+
+<!-- 🔹 Manual Publish Section (Live Input) -->
+<h3>Manual Publish</h3>
+<form method="post" action="/publish" style="margin-top:10px;">
+  <label for="topic">Topic:</label>
+  <select name="topic" id="topic" style="margin-right:10px;">
+    {% for t in topics %}
+      <option value="{{ t['name'] }}">{{ t['name'] }}</option>
+    {% endfor %}
+  </select>
+
+  <label for="message">Message:</label>
+  <input type="text" id="message" name="message" placeholder="Type your message" required style="width:250px; margin-right:10px;">
+
+  <button type="submit">Publish</button>
+</form>
+
+<p><a href="/logout">Logout</a></p>
+</body></html>
+
