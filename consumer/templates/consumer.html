@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consumer Dashboard</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 25px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f0f0f0; }
+    button { padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h2>Welcome, {{ user }}</h2>
+  <p><a href="/logout">Logout</a></p>
+
+  <h3>Active Topics</h3>
+  {% if topics %}
+  <table>
+    <tr><th>Topic</th><th>Status</th><th>Action</th></tr>
+    {% for t in topics %}
+    <tr>
+      <td>{{ t['name'] }}</td>
+      <td>{{ t['status'] }}</td>
+      <td>
+        <form method="post" action="/subscribe">
+          <input type="hidden" name="topic" value="{{ t['name'] }}">
+          <button>Subscribe</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>No active topics available yet.</p>
+  {% endif %}
+
+  <h3>Subscribed Topics</h3>
+  {% if subs %}
+  <table>
+    <tr><th>Topic</th><th>Action</th></tr>
+    {% for s in subs %}
+<tr>
+  <td>{{ s }}</td>
+  <td>
+    <form method="post" action="/start_consuming" style="display:inline;">
+      <input type="hidden" name="topic" value="{{ s }}">
+      <button>Start Consuming</button>
+    </form>
+    <form method="post" action="/unsubscribe" style="display:inline;">
+      <input type="hidden" name="topic" value="{{ s }}">
+      <button>Unsubscribe</button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+  </table>
+  {% else %}
+  <p>You haven’t subscribed to any topics yet.</p>
+  {% endif %}
+</body>
+</html>
+
+ 
