@@ -37,6 +37,7 @@ kafka-lab-project/
 │   │   ├── broker.html
 │   │   └── login.html
 │   └── .env
+│   └── app.py
 └── README.md
 ```
 
