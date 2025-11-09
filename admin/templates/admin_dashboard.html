@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 25px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    h2, h3 { color: #333; }
+    .pending { color: orange; font-weight: bold; }
+    .approved { color: blue; font-weight: bold; }
+    .active { color: green; font-weight: bold; }
+    form { display: inline; }
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <p><a href="/register">➕ Register User</a> | <a href="/logout">🚪 Logout</a></p>
+
+<h3>Create a New Topic</h3>
+<form action="/api/admin_create_topic" method="post">
+  <input type="text" name="name" placeholder="Enter topic name" required>
+  <button type="submit">Create Topic</button>
+</form>
+  <h3>Topics Overview</h3>
+  <table>
+    <tr>
+      <th>ID</th><th>Topic Name</th><th>Status</th><th>Requested By</th><th>Action</th>
+    </tr>
+    {% for t in topics %}
+    <tr>
+      <td>{{ t['id'] }}</td>
+      <td>{{ t['name'] }}</td>
+      <td class="{{ t['status'] }}">{{ t['status'] }}</td>
+      <td>{{ t['requested_by'] or '-' }}</td>
+      <td>
+        {% if t['status'] == 'pending' %}
+          <form action="/api/topic_approve/{{ t['name'] }}" method="post">
+            <button>Approve Topic</button>
+          </form>
+        {% elif t['status'] == 'approved' %}
+          <form action="/api/topic_activate_manual/{{ t['name'] }}" method="post">
+            <button>Activate Topic</button>
+          </form>
+        {% elif t['status'] == 'active' %}
+  <em>✅ Active</em>
+  <form action="/api/admin_delete_topic/{{ t['name'] }}" method="post" style="display:inline;">
+    <button>🗑 Request Delete</button>
+  </form>
+{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Pending Access Requests</h3>
+  <table>
+    <tr>
+      <th>User</th><th>Topic</th><th>Role</th><th>Status</th><th>Action</th>
+    </tr>
+    {% for r in access_reqs %}
+    <tr>
+      <td>{{ r['username'] }}</td>
+      <td>{{ r['topic_name'] }}</td>
+      <td>{{ r['role'] }}</td>
+      <td>{{ r['status'] }}</td>
+      <td>
+        {% if r['status'] == 'pending' %}
+        <form action="/api/approve_access/{{ r['username'] }}/{{ r['topic_name'] }}/{{ r['role'] }}" method="post">
+          <button>Approve Access</button>
+        </form>
+        {% else %}
+          <em>✅ Approved</em>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+<h3>Pending Delete Requests</h3>
+  <table>
+    <tr>
+      <th>Topic Name</th><th>Requested By</th><th>Status</th><th>Action</th>
+    </tr>
+    {% for d in deletes %}
+    <tr>
+      <td>{{ d['topic_name'] }}</td>
+      <td>{{ d['requested_by'] }}</td>
+      <td>{{ d['status'] }}</td>
+      <td>
+        {% if d['status'] == 'pending' %}
+          <form action="/api/topic_delete_approve/{{ d['topic_name'] }}" method="post">
+            <button>Approve Deletion</button>
+          </form>
+        {% else %}
+          <em>✅ Deleted</em>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <h3>Granted Permissions</h3>
+  <table>
+    <tr><th>Username</th><th>Topic</th><th>Role</th></tr>
+    {% for p in permissions %}
+    <tr><td>{{p['username']}}</td><td>{{p['topic_name']}}</td><td>{{p['role']}}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h3>User Subscriptions</h3>
+  <table>
+    <tr><th>User</th><th>Topic</th></tr>
+    {% for s in subs %}
+    <tr><td>{{s['username']}}</td><td>{{s['topic_name']}}</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
