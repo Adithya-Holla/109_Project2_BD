@@ -1,4 +1,4 @@
-###  Distributed Kafka–FastAPI System
+#  Distributed Kafka–FastAPI System
 
 - **Admin** — manages users, topics, permissions, and approvals  
 - **Producer** — creates topics, publishes messages, requests deletions  
@@ -49,10 +49,10 @@ pip install fastapi uvicorn kafka-python requests python-dotenv bcrypt Jinja2
 
 ##  Running it
 
-# admin:
+### admin:
 uvicorn app:app --host 0.0.0.0 --port 8000
 
-# broker:
+### broker:
 bin/zookeeper-server-start.sh config/zookeeper.properties
 
 bin/kafka-server-start.sh config/server.properties
@@ -61,9 +61,9 @@ uvicorn app:app --host 0.0.0.0 --port 8002
 
 for checking: bin/kafka-topics.sh --bootstrap-server 10.147.17.199:9092 --list
 
-# producer:
+### producer:
 uvicorn app:app --host 0.0.0.0 --port 8001
 
-# consumer:
+### consumer:
 uvicorn app:app --host 0.0.0.0 --port 8003
 
