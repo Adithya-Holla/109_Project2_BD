@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Broker Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #fafafa;
+      color: #222;
+    }
+    h2 {
+      color: #333;
+    }
+    ul {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 20px;
+      list-style: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+    li:last-child {
+      border-bottom: none;
+    }
+    button {
+      background: #007bff;
+      border: none;
+      padding: 10px 18px;
+      color: white;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 15px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .loading {
+      color: #ff9800;
+      font-style: italic;
+    }
+    .status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .live {
+      color: #4caf50;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Broker Dashboard</h2>
+  <p><strong>Active Topics in Kafka:</strong></p>
+  <ul>
+    {% for t in topics %}
+      <li>{{t['name']}} - Status: {{t['status']}}</li>
+    {% endfor %}
+  </ul>
+
+  <button id="testButton">🔄 Test Kafka Flow Once</button>
+  <button id="toggleLiveButton">▶️ Start Live Updates</button>
+  <p id="status" class="status"></p>
+  <pre id="result"></pre>
+
+  <p><a href="/logout">Logout</a></p>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
+    const testBtn = document.getElementById("testButton");
+    const toggleBtn = document.getElementById("toggleLiveButton");
+    let liveMode = false;
+    let liveInterval = null;
+
+    async function testKafkaFlow() {
+      statusEl.textContent = "⏳ Testing Kafka message flow...";
+      try {
+        const res = await fetch("/api/test-route");
+        const data = await res.json();
+        if (data.ok) {
+          statusEl.textContent = "✅ Kafka flow test completed.";
+          statusEl.classList.remove("loading");
+          statusEl.classList.add("live");
+        } else {
+          statusEl.textContent = "⚠️ Kafka flow test returned warnings.";
+          statusEl.classList.add("loading");
+        }
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        statusEl.textContent = "❌ Error contacting the broker API.";
+        resultEl.textContent = err.toString();
+      }
+    }
+
+    testBtn.addEventListener("click", testKafkaFlow);
+
+    toggleBtn.addEventListener("click", () => {
+      if (!liveMode) {
+        // Start live mode
+        liveMode = true;
+        toggleBtn.textContent = "⏹ Stop Live Updates";
+        statusEl.textContent = "🔄 Live Kafka monitoring started...";
+        liveInterval = setInterval(testKafkaFlow, 10000); // every 10s
+        testKafkaFlow();
+      } else {
+        // Stop live mode
+        liveMode = false;
+        toggleBtn.textContent = "▶️ Start Live Updates";
+        clearInterval(liveInterval);
+        statusEl.textContent = "⏸ Live monitoring stopped.";
+      }
+    });
+  </script>
+</body>
+</html>
+
