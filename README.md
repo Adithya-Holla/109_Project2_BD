@@ -8,7 +8,7 @@
 ---
 
 ##  Project Architecture
-
+```
 kafka-lab-project/
 ├── admin/
 │   ├── app.py
@@ -38,7 +38,7 @@ kafka-lab-project/
 │   │   └── login.html
 │   └── .env
 └── README.md
-
+```
 
 ##  Installation of Dependencies
 
