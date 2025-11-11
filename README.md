@@ -44,9 +44,13 @@ kafka-lab-project/
 ##  Installation of Dependencies
 
 python3 -m venv .venv
+
 source .venv/bin/activate
+
 pip install --upgrade pip
+
 pip install fastapi uvicorn kafka-python requests python-dotenv bcrypt Jinja2
+
 pip install itsdangerous python-multipart
 
 ##  Running it
